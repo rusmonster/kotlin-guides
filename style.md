@@ -568,6 +568,38 @@ private val ICON = IconLoader.getIcon("/icons/kotlin.png")
 
 When writing a library, retain the explicit type declaration when it is part of the public API.
 
+### Marking result expressions
+
+If an expression is a result of a multi-line block or lambda then it should be marked with `return@label` statement. 
+
+```kotlin
+// WRONG!
+textView.setOnEditorActionListener { _, actionId, event ->
+    if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+        onPositiveButtonClick()
+        true
+    } else {
+        false
+    }
+}
+
+// Okay
+textView.setOnEditorActionListener { _, actionId, event ->
+    if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+        onPositiveButtonClick()
+        return@setOnEditorActionListener true
+    }
+    return@setOnEditorActionListener false
+}
+```
+
+For single-line lambdas the `return@label` statement shouldn't be used.
+
+```kotlin
+list.filter { it > 5 } // Okay
+list.filter { return@filter it > 5 } // WRONG!
+```
+
 
 # Naming
 
